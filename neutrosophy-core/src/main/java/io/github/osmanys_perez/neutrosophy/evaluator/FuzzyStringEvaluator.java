@@ -45,33 +45,44 @@ public final class FuzzyStringEvaluator implements Evaluator<String> {
             return NeutrosophicValue.TRUE; // Both are null, perfect match.
         }
         if (expected == null || actual == null) {
-            // One is null, the other is not. This is likely a definite mismatch.
-            // But we could add a little indeterminacy, e.g., maybe it's an empty string vs null?
             return new NeutrosophicValue(0.0, 0.1, 0.9); // Mostly false
+        }
+        if (expected.isEmpty() && actual.isEmpty()) {
+            return NeutrosophicValue.TRUE; // Both are empty, perfect match.
         }
 
         double similarity = calculateSimilarity(expected, actual);
 
         // **Neutrosophic Interpretation of Similarity**:
-        // This is the key logic. We map a continuous similarity score to the (T, I, F) components.
+        // We map the similarity score to the truth component.
+        // Indeterminacy is highest when similarity is around 0.5.
+        // Falsity is simply (1 - similarity), adjusted.
 
-        if (similarity >= perfectMatchThreshold) {
-            // High similarity: Strong truth, very low indeterminacy and falsehood.
-            // Scale truth towards 1.0 as we approach the threshold.
-            double truth = 0.7 + (0.3 * ((similarity - perfectMatchThreshold) / (1.0 - perfectMatchThreshold)));
-            return new NeutrosophicValue(Math.min(truth, 1.0), 0.05, 0.05);
-        } else if (similarity >= perfectMatchThreshold / 2) {
-            // Medium similarity: This is the zone of maximum indeterminacy.
-            // It's not clearly right or wrong. We split the membership.
-            double baseTruth = similarity / perfectMatchThreshold; // 0.0 to 1.0
-            double baseFalsity = 1.0 - baseTruth;
-            // Introduce significant indeterminacy
-            return new NeutrosophicValue(baseTruth * 0.6, 0.3, baseFalsity * 0.6);
-        } else {
-            // Low similarity: Strong falsehood, very low truth and indeterminacy.
-            double falsity = 0.7 + (0.3 * (1.0 - (similarity / (perfectMatchThreshold / 2))));
-            return new NeutrosophicValue(0.05, 0.05, Math.min(falsity, 1.0));
+        // 1. Truth is directly based on similarity, scaled by the threshold.
+        // If we are above the threshold, truth is high.
+        double truth = Math.min(1.0, similarity / perfectMatchThreshold);
+
+        // 2. Falsity is the opposite of truth.
+        double falsity = 1.0 - similarity;
+
+        // 3. Indeterminacy is the "unsure" part. It's highest when we are in the middle.
+        // We model it as a Gaussian-like curve around 0.5, but scaled.
+        // Avoid negative values with Math.max(0, ...)
+        double peakIndeterminacy = 0.5; // The similarity value where we are most unsure
+        double spread = 0.2; // How wide the peak of indeterminacy is
+        double indeterminacy = 0.7 * Math.exp(-Math.pow((similarity - peakIndeterminacy) / spread, 2));
+
+        // 4. NORMALIZE: Ensure T + I + F <= 1.
+        // Our truth and falsity are already based on [0,1], but indeterminacy adds extra.
+        // We need to scale them down proportionally if their sum exceeds 1.
+        double total = truth + indeterminacy + falsity;
+        if (total > 1.0) {
+            truth = truth / total;
+            indeterminacy = indeterminacy / total;
+            falsity = falsity / total;
         }
+
+        return new NeutrosophicValue(truth, indeterminacy, falsity);
     }
 
     /**

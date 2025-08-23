@@ -1,5 +1,7 @@
 package io.github.osmanys_perez.neutrosophy;
 
+import java.util.Locale;
+
 /**
  * Assertion class for neutrosophic values. The result of calling
  * {@link NeutrosophicAssert#assertThat(Object, Evaluator, NeutrosophicContext)}.
@@ -71,6 +73,7 @@ public final class NeutrosophicAssertion<T> {
      */
     private String buildFailureMessage(NeutrosophicValue result) {
         return String.format(
+                Locale.US,
                 "%n" +
                         "Neutrosophic Assertion Failed:%n" +
                         "  Actual value.......: %s%n" +
@@ -85,6 +88,7 @@ public final class NeutrosophicAssertion<T> {
 
     private String buildFailureMessageForIsFalse(NeutrosophicValue result) {
         return String.format(
+                Locale.US,
                 "%n" +
                         "Neutrosophic Assertion Failed:%n" +
                         "  Actual value.......: %s%n" +

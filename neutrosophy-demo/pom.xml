@@ -13,18 +13,17 @@
     <artifactId>neutrosophy-demo</artifactId>
 
     <dependencies>
-        <!-- Dependency on our own core library -->
         <dependency>
-            <groupId>io.github.osmanys-perez</groupId>
+            <groupId>io.github.osmanys_perez</groupId>
             <artifactId>neutrosophy-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <!-- JUnit for running the demo tests -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>${junit.version}</version>
             <scope>test</scope>
+            <!-- Version is controlled by parent's dependencyManagement -->
         </dependency>
         <dependency>
             <groupId>io.github.osmanys-perez</groupId>

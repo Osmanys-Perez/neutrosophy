@@ -1,5 +1,6 @@
 package io.github.osmanys_perez.neutrosophy;
 
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -46,11 +47,11 @@ public final class NeutrosophicValue {
         validateComponent(falsity, "Falsity");
 
         double sum = truth + indeterminacy + falsity;
-        if (sum > 1.0) {
-            // We choose to be strict here for the library's primary use case.
-            // We can provide a static factory method for non-normalized values later if needed.
+        // Use a small epsilon for floating-point comparison
+        double epsilon = 0.0000001;
+        if (sum > 1.0 + epsilon) {
             throw new IllegalArgumentException(
-                    String.format("The sum of the components (T=%.2f, I=%.2f, F=%.2f = %.2f) must not exceed 1.0. " +
+                    String.format(Locale.US, "The sum of the components (T=%.2f, I=%.2f, F=%.2f = %.2f) must not exceed 1.0. " +
                                     "Consider normalizing your values or using a different neutrosophic model.",
                             truth, indeterminacy, falsity, sum));
         }
@@ -134,6 +135,6 @@ public final class NeutrosophicValue {
 
     @Override
     public String toString() {
-        return String.format("(T=%.2f, I=%.2f, F=%.2f)", truth, indeterminacy, falsity);
+        return String.format(Locale.US, "(T=%.2f, I=%.2f, F=%.2f)", truth, indeterminacy, falsity);
     }
 }
