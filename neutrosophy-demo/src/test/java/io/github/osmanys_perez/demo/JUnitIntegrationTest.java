@@ -41,4 +41,6 @@ public class JUnitIntegrationTest {
                 io.github.osmanys_perez.neutrosophy.NeutrosophicContext.defaultContext()
         ).isTrue();
     }
+
+    @NeutrosophicTest()
 }
