@@ -5,7 +5,6 @@ import io.github.osmanys_perez.neutrosophy.Evaluator;
 import io.github.osmanys_perez.neutrosophy.NeutrosophicContext;
 import io.github.osmanys_perez.neutrosophy.NeutrosophicValue;
 import io.github.osmanys_perez.neutrosophy.evaluator.FuzzyStringEvaluator;
-import io.github.osmanys_perez.neutrosophy.evaluator.NumericEvaluator;
 import io.github.osmanys_perez.neutrosophy.evaluator.TemporalEvaluator;
 import org.junit.jupiter.api.Test;
 
@@ -21,10 +20,8 @@ public class TemporalEvaluatorTest {
     // Simulate a value that changes after a delay
     static class DelayedValueSimulator {
         private final AtomicReference<String> value = new AtomicReference<>("loading...");
-        private final long setTime;
 
         DelayedValueSimulator(String finalValue, long delayMs) {
-            this.setTime = System.currentTimeMillis() + delayMs;
             new Thread(() -> {
                 try {
                     Thread.sleep(delayMs);
@@ -41,7 +38,7 @@ public class TemporalEvaluatorTest {
     }
 
     @Test
-    void testEventualConsistency() throws InterruptedException {
+    void testEventualConsistency() {
         // Simulate a database eventually getting the correct value
         DelayedValueSimulator simulator = new DelayedValueSimulator("New York", 2000); // Will change after 2 seconds
 

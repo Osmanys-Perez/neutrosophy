@@ -8,39 +8,53 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 
 import java.lang.reflect.Method;
 
-/**
- * JUnit 5 extension that provides neutrosophic testing capabilities.
- */
-public class NeutrosophicTestExtension implements BeforeEachCallback, ParameterResolver { // <-- Add ParameterResolver
+public class NeutrosophicTestExtension implements BeforeEachCallback, ParameterResolver {
 
     @Override
-    public void beforeEach(ExtensionContext context) throws Exception {
+    public void beforeEach(ExtensionContext context) {
         Method testMethod = context.getRequiredTestMethod();
         NeutrosophicTest annotation = testMethod.getAnnotation(NeutrosophicTest.class);
 
         if (annotation != null) {
-            NeutrosophicContext neutrosophicContext = NeutrosophicContext.builder()
-                    .withTruthThreshold(annotation.truthThreshold())
-                    .withIndeterminacyThreshold(annotation.indeterminacyThreshold())
-                    .withFalsityThreshold(annotation.falsityThreshold())
-                    .withTolerance(annotation.tolerance())
-                    .build();
+            NeutrosophicContext neutrosophicContext;
+
+            // Check if using predefined context
+            if (!annotation.context().isEmpty()) {
+                neutrosophicContext = getPredefinedContext(annotation.context());
+            } else {
+                // Use individual thresholds (original simple logic)
+                neutrosophicContext = NeutrosophicContext.builder()
+                        .withTruthThreshold(annotation.truthThreshold())
+                        .withIndeterminacyThreshold(annotation.indeterminacyThreshold())
+                        .withFalsityThreshold(annotation.falsityThreshold())
+                        .withTolerance(annotation.tolerance())
+                        .build();
+            }
 
             context.getRoot().getStore(ExtensionContext.Namespace.GLOBAL)
                     .put("neutrosophicContext", neutrosophicContext);
         }
     }
 
-    // === NEW METHODS FOR PARAMETER RESOLUTION ===
+    private NeutrosophicContext getPredefinedContext(String contextName) {
+        switch (contextName.toLowerCase()) {
+            case "lenient":
+                return NeutrosophicContext.lenientContext();
+            case "strict":
+                return NeutrosophicContext.strictContext();
+            case "default":
+            default:
+                return NeutrosophicContext.defaultContext();
+        }
+    }
+
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-        // We can resolve ExtensionContext parameters
         return parameterContext.getParameter().getType().equals(ExtensionContext.class);
     }
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-        // Simply return the ExtensionContext that JUnit provides to us
         return extensionContext;
     }
 
