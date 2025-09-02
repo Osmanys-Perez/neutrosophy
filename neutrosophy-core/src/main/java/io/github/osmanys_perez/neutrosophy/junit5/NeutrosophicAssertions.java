@@ -2,12 +2,10 @@ package io.github.osmanys_perez.neutrosophy.junit5;
 
 import io.github.osmanys_perez.neutrosophy.Evaluator;
 import io.github.osmanys_perez.neutrosophy.NeutrosophicAssert;
+import io.github.osmanys_perez.neutrosophy.NeutrosophicAssertion;
 import io.github.osmanys_perez.neutrosophy.NeutrosophicContext;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-/**
- * JUnit-specific assertions for neutrosophic testing.
- */
 public final class NeutrosophicAssertions {
 
     private NeutrosophicAssertions() {
@@ -15,13 +13,14 @@ public final class NeutrosophicAssertions {
     }
 
     /**
-     * Asserts on a value using the NeutrosophicContext from @NeutrosophicTest annotation.
+     * The ONLY assertThat method. Returns the NeutrosophicAssertion for fluent chaining.
+     * It is the caller's responsibility to call .isTrue(), .isFalse(), .isAccepted(), or .isRejected().
      */
-    public static <T> void assertThat(T actual, Evaluator<T> evaluator, ExtensionContext context) {
+    public static <T> NeutrosophicAssertion<T> assertThat(T actual, Evaluator<T> evaluator, ExtensionContext context) {
         NeutrosophicContext neutrosophicContext = NeutrosophicTestExtension.getContext(context);
         if (neutrosophicContext == null) {
             throw new IllegalStateException("No NeutrosophicContext found. Please add @NeutrosophicTest annotation.");
         }
-        NeutrosophicAssert.assertThat(actual, evaluator, neutrosophicContext).isTrue();
+        return NeutrosophicAssert.assertThat(actual, evaluator, neutrosophicContext);
     }
 }

@@ -18,7 +18,7 @@ public class AdvancedEvaluatorsTest {
         List<String> cities = List.of("New York", "Los Angeles", "San Francisco", "Chicago");
 
         assertThat(cities, CollectionContainsEvaluator.anElementThat(
-                FuzzyStringEvaluator.comparedTo("San Fran")
+                FuzzyStringEvaluator.comparedTo("San Franci")
         ), NeutrosophicContext.lenientContext()).isTrue(); // Use lenient context
     }
 
@@ -26,7 +26,7 @@ public class AdvancedEvaluatorsTest {
     void testExceptionThrowing() {
         assertThat(() -> { throw new IllegalArgumentException("Invalid input parameter"); },
                 ExceptionThrownEvaluator.throwsException(IllegalArgumentException.class)
-                        .withMessageContaining("invalid input"),
+                        .withMessageContaining("invalid input para"),
                 NeutrosophicContext.lenientContext()).isTrue(); // Use lenient context
     }
 

@@ -1,6 +1,5 @@
 package io.github.osmanys_perez.demo;
 
-import io.github.osmanys_perez.neutrosophy.NeutrosophicAssert;
 import io.github.osmanys_perez.neutrosophy.NeutrosophicContext;
 import io.github.osmanys_perez.neutrosophy.evaluator.ExactEqualsEvaluator;
 import io.github.osmanys_perez.neutrosophy.evaluator.NeutrosophicEqualsEvaluator;
